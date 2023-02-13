@@ -1,0 +1,27 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model banks {
+  name     String?    @db.VarChar(49)
+  id       BigInt     @unique @id(map: "banks_id_pkey")
+  branches branches[]
+}
+
+/// The underlying table does not contain a valid unique identifier and can therefore currently not be handled by the Prisma Client.
+model branches {
+  ifsc     String  @unique @id(map: "branches_ifsc_pkey") @db.VarChar(11)
+  bank_id  BigInt?
+  branch   String? @db.VarChar(74)
+  address  String? @db.VarChar(195)
+  city     String? @db.VarChar(50)
+  district String? @db.VarChar(50)
+  state    String? @db.VarChar(26)
+  banks    banks?  @relation(fields: [bank_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "branches_banks_fkey")
+}
